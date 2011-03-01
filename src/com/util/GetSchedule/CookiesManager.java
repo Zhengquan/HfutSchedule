@@ -41,6 +41,7 @@ public class CookiesManager {
         HttpResponse httpResponse = defaultHttpClient.execute(httpget);
         List<Cookie> cookies = defaultHttpClient.getCookieStore().getCookies();
         boolean isLogin = CheckCookies(cookies);
+    	ReleaseConnection(httpResponse);
         //如果不存在，则POST密码等
         if(isLogin){
         	return true;
@@ -53,7 +54,6 @@ public class CookiesManager {
         nvps.add(new BasicNameValuePair("UserStyle", "student"));
         
         httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-        ReleaseConnection(httpResponse);
         httpResponse = defaultHttpClient.execute(httpost);
         ReleaseConnection(httpResponse);
         if(CheckCookies(cookies))

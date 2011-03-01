@@ -25,7 +25,7 @@ public class ParseHtml {
 			HttpResponse response = defaultHttpClient.execute(httpget);
 			//System.out.println(EntityUtils.toString(response.getEntity()));
 			String s = EntityUtils.toString(response.getEntity());
-			CookiesManager.ReleaseConnection(response);
+			//CookiesManager.ReleaseConnection(response);
 			//解析数据_个人信息
 			String  [] user_Name_pattern = {
 					"姓名:(.*)<",
@@ -61,7 +61,7 @@ public class ParseHtml {
 		try {
 			HttpResponse httpResponse = defaultHttpClient.execute(httpGet);
 			String s = EntityUtils.toString(httpResponse.getEntity());
-			CookiesManager.ReleaseConnection(httpResponse);
+			//CookiesManager.ReleaseConnection(httpResponse);
 			//匹配table部分
 			Pattern pattern = Pattern.compile(schedule_apttern,Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(s);
@@ -104,5 +104,8 @@ public class ParseHtml {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public void shutDownDefaultClent(){
+		defaultHttpClient.getConnectionManager().shutdown();
 	}
 }

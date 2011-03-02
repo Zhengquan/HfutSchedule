@@ -39,6 +39,7 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 <TextView
 android:id="@+id/schedule1"
 android:text="A"
+android:textColor="#563624"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
@@ -47,6 +48,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="B"
+android:textColor="#563624"
 android:id="@+id/schedule2"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
@@ -55,6 +57,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="C"
+android:textColor="#54211d"
 android:id="@+id/schedule3"
 android:layout_width="fill_parent"
 android:layout_height="20dp"
@@ -63,6 +66,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="D"
+android:textColor="#563624"
 android:id="@+id/schedule4"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
@@ -71,6 +75,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="E"
+android:textColor="#563624"
 android:id="@+id/schedule5"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
@@ -79,6 +84,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="备注"
+android:textColor="#281f1d"
 android:id="@+id/schedule6"
 android:layout_width="fill_parent"
 android:layout_height="50dp"

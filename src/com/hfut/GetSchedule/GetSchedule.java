@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-
 import com.util.GetSchedule.CookiesManager;
 
 public class GetSchedule extends Activity {
@@ -16,7 +14,6 @@ public class GetSchedule extends Activity {
 	private Button mButton2;
 	private EditText mEditText1;
 	private EditText mEditText2;
-	private TextView mTextView1;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +22,6 @@ public class GetSchedule extends Activity {
         mButton2 = (Button)findViewById(R.id.button2);
         mEditText1 = (EditText)findViewById(R.id.edittext1);
         mEditText2 = (EditText)findViewById(R.id.edittext2);
-        mTextView1 = (TextView)findViewById(R.id.textview0);
-        
         initialClickedListener();
 	}
     private void initialClickedListener() {
@@ -42,18 +37,20 @@ public class GetSchedule extends Activity {
 				try {
 					boolean login_success = cookiesManager.GenerateCookies();
 					if(login_success){
-//						mTextView1.setText("登陆成功");
 						Intent intent  = new Intent();
 						intent.setClass(GetSchedule.this, ScheduleView.class);
 						Bundle bundle = new Bundle();
-						bundle.putString("user",mEditText1.getText().toString());
-						bundle.putString("password",mEditText2.getText().toString());
+						String user = mEditText1.getText().toString();
+						String password = mEditText2.getText().toString();
+						bundle.putString("user",user);
+						bundle.putString("password",password);
 						intent.putExtras(bundle);
 						startActivity(intent);
+					}else{
+						//登陆失败
 					}
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
-					mTextView1.setText("登陆失败");
 					e.printStackTrace();
 				}
 			}

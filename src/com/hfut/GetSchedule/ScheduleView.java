@@ -3,7 +3,7 @@ package com.hfut.GetSchedule;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -38,16 +38,17 @@ public class ScheduleView extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule);
 		//初始化TextView控件
-		createHandler();
 		textViewArraya = (TextView)findViewById(R.id.schedule1);//0,1
 		textViewArrayb = (TextView)findViewById(R.id.schedule2);//2,3
 		textViewArrayc = (TextView)findViewById(R.id.schedule4);//4,5
 		textViewArrayd = (TextView)findViewById(R.id.schedule5);//6,7
 		textViewDate = (TextView)findViewById(R.id.textview3);
 		textViewArraye = (TextView)findViewById(R.id.schedule3);
-		
 		mButton_former =(Button)findViewById(R.id.button_former);
 		mButton_next = (Button)findViewById(R.id.button_Next);
+		
+		//创建Handler
+		createHandler();
 		Bundle bundle = new Bundle();
 		bundle = this.getIntent().getExtras();
 		CookiesManager cookiesManager = new CookiesManager(
@@ -109,9 +110,9 @@ public class ScheduleView extends Activity {
 				switch(msg.what){
 				case UPDATE_DATE_TEXTVIEW:
 					Date date = new Date();
-					DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM,Locale.CHINA);
-					String formattedStr = dateFormat.format(date);
-					textViewDate.setText("Today "+formattedStr);
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月-d日EE ,a HH:MM:ss",Locale.CHINA);
+					String formattedStr = simpleDateFormat.format(date);
+					textViewDate.setText(formattedStr);
 				break;
 				}
 			}

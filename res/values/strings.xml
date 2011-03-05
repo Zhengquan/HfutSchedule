@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, GetSchedule!</string>
     <string name="app_name">GetSchedule</string>
+    <color name="textview_week_default">#2e3a1f</color>
 </resources>

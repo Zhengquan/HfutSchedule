@@ -75,14 +75,17 @@ public class ScheduleDataBaseHelper extends SQLiteOpenHelper {
 	//用于返回一个表的所有数据，并以ArrayList格式存放
 	public ArrayList<ArrayList<String>> getStudentSchedule(String tablename){
 		ArrayList<ArrayList<String>>result = new ArrayList<ArrayList<String>>();
-		ArrayList<String>temp = new ArrayList<String>();
+		
 		Cursor cursor = selectItem(tablename, COLUMN_ARRAY);
+		cursor.moveToFirst();
+		do
 		{
-			for(int i=0;i<6;i++)
+			ArrayList<String>temp = new ArrayList<String>();
+			for(int i=0;i<7;i++)
 				temp.add(cursor.getString(i));
 			result.add(temp);
-			temp.clear();
 		}while(cursor.moveToNext());
+		
 		return result;
 	}
 }

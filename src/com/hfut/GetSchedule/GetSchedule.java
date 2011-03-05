@@ -60,7 +60,7 @@ public class GetSchedule extends Activity {
 					bundle.putString("user",user);
 					bundle.putString("password",password);
 					//测试用
-					bundle.putBoolean("IS_LOGGED", false);
+					bundle.putBoolean("IS_LOGGED",true);
 					intent.putExtras(bundle);
 					mButton1.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_back));
 					progressBar1.setVisibility(ProgressBar.INVISIBLE);

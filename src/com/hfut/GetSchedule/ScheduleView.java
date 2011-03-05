@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -170,6 +171,10 @@ public class ScheduleView extends Activity {
 		for(int i=0;i<4;i++)
 			textViewArray[i].setText(schedule.get(i*2));
 		int real_week = ScheduleManager.getRealWeekDay();
+		if(next_count%7 == 0)
+			textViewArray[4].setTextColor(Color.rgb(0, 100, 0));
+		else
+			textViewArray[4].setTextColor(R.color.textview_week_default);
 		textViewArray[4].setText(weekend[(next_count+real_week-1)%7]);
 	}
 	private void createHandler() {

@@ -15,65 +15,137 @@ import android.widget.TextView;
 
 import com.util.GetSchedule.ParseHtml;
 import com.util.GetSchedule.CookiesManager;
+import com.util.GetSchedule.ScheduleDataBaseHelper;
 import com.util.GetSchedule.ScheduleManager;
 
 public class ScheduleView extends Activity {
 	private TextView textViewDate ;
 	private Handler handler;
-	private TextView textViewArraya;
-	private TextView textViewArrayb;
-	private TextView textViewArrayc;
-	private TextView textViewArrayd;
-	private TextView textViewArraye;
+	private TextView []textViewArray;
+	private Bundle bundle;
 	
 	private Button mButton_next;
 	private Button mButton_former;
 	private ArrayList<ArrayList<String>> scheduleData;
+	private boolean current_logged;
 	
 	private int next_count;
+	
+	//当前的用户信息
+	private String user;
+	private String password;
+	//当前用户的数据在数据库中存储的table名称
+	private String table_name;
 	private static final int UPDATE_DATE_TEXTVIEW = 0x111;
+	private static final String [] weekend ={
+		 "星期一"
+		,"星期二"
+		,"星期三"
+		,"星期四"
+		,"星期五"
+		,"星期六"
+		,"星期曰"};
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.schedule);
+		textViewArray = new TextView[5];
 		//初始化TextView控件
-		textViewArraya = (TextView)findViewById(R.id.schedule1);//0,1
-		textViewArrayb = (TextView)findViewById(R.id.schedule2);//2,3
-		textViewArrayc = (TextView)findViewById(R.id.schedule4);//4,5
-		textViewArrayd = (TextView)findViewById(R.id.schedule5);//6,7
+		textViewArray[0] = (TextView)findViewById(R.id.schedule1);//0,1
+		textViewArray[1] = (TextView)findViewById(R.id.schedule2);//2,3
+		textViewArray[2]= (TextView)findViewById(R.id.schedule4);//4,5
+		textViewArray[3]= (TextView)findViewById(R.id.schedule5);//6,7
+		textViewArray[4] = (TextView)findViewById(R.id.schedule3);
+		
 		textViewDate = (TextView)findViewById(R.id.textview3);
-		textViewArraye = (TextView)findViewById(R.id.schedule3);
 		mButton_former =(Button)findViewById(R.id.button_former);
 		mButton_next = (Button)findViewById(R.id.button_Next);
 		
 		//创建Handler
 		createHandler();
-		Bundle bundle = new Bundle();
+		//创建bundle
+		bundle = new Bundle();
+		/**根据登录界面传送过来的current_logged,
+		 * 来判断当前用户是否已经登录过
+		 * 如果没有登录过:则联网，生成Cookie，传输数据，
+		 * 并保存至数据库中。
+		 * 如果当前用户已经完成登录，则直接从数据库中读取
+		 * 数据，来初始化scheduleData等
+		 * */
+		initialScheduleData();
+		//数据初始化完成,完成按钮的响应
+		initButtonListener();
+		//取得当天的课程分布,并显示在UI上
+		ArrayList<String> schedule = ScheduleManager.getDaysSchedule(scheduleData, 0);
+		setTextScheduleView(schedule);
+		
+		//创建界面管理进程
+		UIManagerThread uiManagerThread = new UIManagerThread();
+		uiManagerThread.start();
+		
+	}
+	private void initialScheduleData() {
+		// TODO Auto-generated method stub
+		
+		//从bundle中获取current_logged的取值
 		bundle = this.getIntent().getExtras();
+		//如果已经登录则读取数据并返回
+		current_logged = bundle.getBoolean("IS_LOGGED");
+		user = bundle.getString("user");
+		password = bundle.getString("password");
+		//初始化table_name
+		table_name = "_"+user;
+		if(current_logged){
+			//读取数据
+			fillDataFromDB();
+			return;
+		}
+		/*没有登录则下载数据并存储
+		 * 下载的时候已经完成了数据的填充
+		 * 故不需要再次读出
+		*/
+		downloadDataAndStore();
+	}
+	private void fillDataFromDB() {
+		// TODO Auto-generated method stub
+		ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(this
+				,"schedule"
+				,null
+				,1);
+		scheduleData = scheduleDataBaseHelper.getStudentSchedule(table_name);
+		scheduleDataBaseHelper.close();
+	}
+	void downloadDataAndStore(){
 		CookiesManager cookiesManager = new CookiesManager(
 				 "http://210.45.240.29/student/html/s_index.htm"
 				,"http://210.45.240.29/pass.asp"
-				,bundle.getString("user")
-				,bundle.getString("password"));
+				,user
+				,password);
 		try {
 			cookiesManager.GenerateCookies();
 			ParseHtml parseHtml = new ParseHtml(cookiesManager.defaultHttpClient);
 			scheduleData = parseHtml.getScheduleThisTerm();
 			//parseHtml.getUserInformation();
-			ArrayList<String> schedule = ScheduleManager.getDaysSchedule(scheduleData, 0);
-			DateManagerThread dateManagerThread = new DateManagerThread();
-			setTextScheduleView(schedule);
-			dateManagerThread.start();
-			initButtonListener();
+			//下载完成后，利用ScheduleDataBaseHelper类完成数据的存储工作
+			ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(this
+					,"schedule"
+					,null
+					,1);
+			//创建数据表
+			scheduleDataBaseHelper.createTable(table_name);
+			//存储数据之Schedule的table_name表中
+			scheduleDataBaseHelper.insertStudentSchedule(table_name, scheduleData);
+			//关闭数据库
+			scheduleDataBaseHelper.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 	void initButtonListener(){
 		next_count = 0;
-		textViewArraye.setText("  中午  ");
 		mButton_next.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
@@ -95,10 +167,10 @@ public class ScheduleView extends Activity {
 		});
 	}
 	void setTextScheduleView(ArrayList<String> schedule){
-		textViewArraya.setText(schedule.get(0));
-		textViewArrayb.setText(schedule.get(2));
-		textViewArrayc.setText(schedule.get(4));
-		textViewArrayd.setText(schedule.get(6));
+		for(int i=0;i<4;i++)
+			textViewArray[i].setText(schedule.get(i*2));
+		int real_week = ScheduleManager.getRealWeekDay();
+		textViewArray[4].setText(weekend[(next_count+real_week-1)%7]);
 	}
 	private void createHandler() {
 		// TODO Auto-generated method stub
@@ -109,16 +181,18 @@ public class ScheduleView extends Activity {
 				super.handleMessage(msg);
 				switch(msg.what){
 				case UPDATE_DATE_TEXTVIEW:
+					//更新顶端的当前Date-Time视图
 					Date date = new Date();
 					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月-d日EE ,a HH:MM:ss",Locale.CHINA);
 					String formattedStr = simpleDateFormat.format(date);
 					textViewDate.setText(formattedStr);
+					//更新课表中的星期(显示内容对应的星期)
 				break;
 				}
 			}
 		};
 	}
-	public class DateManagerThread extends Thread {
+	public class UIManagerThread extends Thread {
 		@Override
 		public void run() {
 			while(true){

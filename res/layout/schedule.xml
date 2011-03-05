@@ -57,7 +57,7 @@ android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="C"
-android:textColor="#54211d"
+android:textColor="#2e3a1f"
 android:id="@+id/schedule3"
 android:layout_width="fill_parent"
 android:layout_height="20dp"

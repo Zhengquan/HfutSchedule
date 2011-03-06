@@ -89,12 +89,16 @@ public class ScheduleView extends Activity {
 	private void initialScheduleData() {
 		// TODO Auto-generated method stub
 		
-		//从bundle中获取current_logged的取值
 		bundle = this.getIntent().getExtras();
-		//如果已经登录则读取数据并返回
-		current_logged = bundle.getBoolean("IS_LOGGED");
 		user = bundle.getString("user");
 		password = bundle.getString("password");
+		ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(this
+				,"schedule"
+				,null
+				,1);
+		current_logged = scheduleDataBaseHelper.currentHadLogged(user);
+		//关闭数据库
+		scheduleDataBaseHelper.close();
 		//初始化table_name
 		table_name = "_"+user;
 		if(current_logged){

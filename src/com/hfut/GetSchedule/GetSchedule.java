@@ -7,22 +7,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.util.GetSchedule.CookiesManager;
+import com.util.GetSchedule.SchedulePreferenceManager;
 
 public class GetSchedule extends Activity {
     /** Called when the activity is first created. */
 	private Button mButton1;
 	private Button mButton2;
-	private EditText mEditText1;
+	private AutoCompleteTextView mAutoComplete1;
 	private EditText mEditText2;
 	private ProgressBar progressBar1;
 	private Handler handler;
 	private TextView textView4;
+	private CheckBox mchBox1;
+	private CheckBox mchBox2;
+	private boolean autologin;
 	
 	private static final int  LoginSuccess = 0x127;
 	private static final int  LoginFailed = 0x128;
@@ -33,17 +40,53 @@ public class GetSchedule extends Activity {
         setContentView(R.layout.login);
         mButton1 = (Button)findViewById(R.id.button1);
         mButton2 = (Button)findViewById(R.id.button2);
-        mEditText1 = (EditText)findViewById(R.id.edittext1);
+        mAutoComplete1 = (AutoCompleteTextView)findViewById(R.id.autocomplete1);
         mEditText2 = (EditText)findViewById(R.id.edittext2);
         progressBar1 = (ProgressBar)findViewById(R.id.progressbar1);
         textView4 = (TextView)findViewById(R.id.textview4);
-        
+        mchBox1 = (CheckBox)findViewById(R.id.check1);
+        mchBox2 = (CheckBox)findViewById(R.id.check2);
         textView4.setVisibility(TextView.INVISIBLE);
         createHandler();
+        //根据Preference中的数据填充表单
+        fillControlByPreference();
+        //设置CheckBox的响应事件
+        initCheckBox();
+        initialAutoComplete();
         initialClickedListener();
 	}
     
-    private void createHandler() {
+	private void fillControlByPreference() {
+		// TODO Auto-generated method stub
+		mchBox1.setChecked(true);
+        mAutoComplete1.setText(SchedulePreferenceManager.returnUserByPreference(this));
+        mEditText2.setText(SchedulePreferenceManager.returnPass(this));
+	}
+
+	private void initCheckBox() {
+		// TODO Auto-generated method stub
+		mchBox2.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				//自动登录需要记下用户名密码等
+				if(mchBox2.isChecked())
+					mchBox1.setChecked(true);
+			}
+		});
+	}
+
+	private void initialAutoComplete() {
+		// TODO Auto-generated method stub
+    	//初始化AutoComplete
+		String[]users = SchedulePreferenceManager.returnUserArray(this);
+		ArrayAdapter<String>arrayAdapter = new ArrayAdapter<String>(this, 
+				android.R.layout.simple_dropdown_item_1line
+				, users);
+		mAutoComplete1.setAdapter(arrayAdapter);
+	}
+
+	private void createHandler() {
 		// TODO Auto-generated method stub
     	handler = new Handler(){
 			@Override
@@ -55,12 +98,15 @@ public class GetSchedule extends Activity {
 					Intent intent  = new Intent();
 					intent.setClass(GetSchedule.this, ScheduleView.class);
 					Bundle bundle = new Bundle();
-					String user = mEditText1.getText().toString();
+					String user = mAutoComplete1.getText().toString();
 					String password = mEditText2.getText().toString();
+					autologin = mchBox2.isChecked();
 					bundle.putString("user",user);
 					bundle.putString("password",password);
-					//测试用
-					bundle.putBoolean("IS_LOGGED",true);
+					if(mchBox1.isChecked()){
+						//Remember Me:把用户名，密码等写入Preference 文件
+						SchedulePreferenceManager.createSchedulePreference(GetSchedule.this, user, password, autologin);
+					}
 					intent.putExtras(bundle);
 					mButton1.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_back));
 					progressBar1.setVisibility(ProgressBar.INVISIBLE);
@@ -92,7 +138,7 @@ public class GetSchedule extends Activity {
 		});
 		mButton2.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View arg0) {
-				mEditText1.setText("");
+				mAutoComplete1.setText("");
 				mEditText2.setText("");
 			}
 		});
@@ -104,7 +150,7 @@ public class GetSchedule extends Activity {
 			CookiesManager cookiesManager = new CookiesManager(
 					 "http://210.45.240.29/student/html/s_index.htm"
 					,"http://210.45.240.29/pass.asp"
-					, mEditText1.getText().toString()
+					, mAutoComplete1.getText().toString()
 					, mEditText2.getText().toString());
 			boolean log_ok = false;
 			try {

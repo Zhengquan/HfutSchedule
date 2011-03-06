@@ -88,4 +88,17 @@ public class ScheduleDataBaseHelper extends SQLiteOpenHelper {
 		
 		return result;
 	}
+	public boolean currentHadLogged(String user){
+		SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
+		Cursor cursor = sqLiteDatabase.query("sqlite_master"
+				, null
+				,"name="+"\"_"+user+"\""
+				, null
+				, null
+				, null
+				, null);
+		if(cursor.getCount()!=0)
+			return true;
+		return false;
+	}
 }

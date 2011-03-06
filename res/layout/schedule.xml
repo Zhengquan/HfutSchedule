@@ -16,9 +16,8 @@ xmlns:android="http://schemas.android.com/apk/res/android">
 android:id="@+id/relative4"
 android:layout_width="wrap_content"
 android:layout_height="wrap_content"
-android:paddingLeft="25dp"
-android:paddingRight="25dp"
 android:layout_centerInParent="true"
+android:paddingTop="3dp"
 xmlns:android="http://schemas.android.com/apk/res/android">
 <TextView
 android:id="@+id/textview3"
@@ -35,6 +34,7 @@ android:orientation="vertical"
 android:layout_below="@id/textview3"
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
+android:background="@drawable/transparent_schedule"
 xmlns:android="http://schemas.android.com/apk/res/android">
 <TextView
 android:id="@+id/schedule1"
@@ -44,7 +44,6 @@ android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
 android:layout_marginTop="5dp"
-android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="B"
@@ -53,7 +52,6 @@ android:id="@+id/schedule2"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
-android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="C"
@@ -62,7 +60,6 @@ android:id="@+id/schedule3"
 android:layout_width="fill_parent"
 android:layout_height="20dp"
 android:gravity="center"
-android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="D"
@@ -71,7 +68,6 @@ android:id="@+id/schedule4"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
-android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="E"
@@ -80,7 +76,6 @@ android:id="@+id/schedule5"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
-android:background="@drawable/textview_schedule"
 />
 <TextView
 android:text="备注"
@@ -89,7 +84,6 @@ android:id="@+id/schedule6"
 android:layout_width="fill_parent"
 android:layout_height="50dp"
 android:gravity="center"
-android:background="@drawable/textview_schedule"
 />
 </LinearLayout>
 <RelativeLayout
@@ -97,7 +91,6 @@ android:layout_width="wrap_content"
 android:layout_height="wrap_content"
 android:layout_centerHorizontal="true"
 android:layout_below="@id/linearlayout1"
-android:padding="20dp"
 xmlns:android="http://schemas.android.com/apk/res/android">
 <Button 
 android:id="@+id/button_former"

@@ -14,13 +14,18 @@ public final class R {
         public static final int textview_week_default=0x7f050000;
     }
     public static final class drawable {
-        public static final int button_back=0x7f020000;
-        public static final int button_focus=0x7f020001;
-        public static final int button_schedule=0x7f020002;
-        public static final int icon=0x7f020003;
-        public static final int login_back=0x7f020004;
-        public static final int schedule_back=0x7f020005;
-        public static final int textview_schedule=0x7f020006;
+        public static final int bianqiang=0x7f020000;
+        public static final int bianqiang_trans=0x7f020001;
+        public static final int button_back=0x7f020002;
+        public static final int button_focus=0x7f020003;
+        public static final int button_schedule=0x7f020004;
+        public static final int guishu_login=0x7f020005;
+        public static final int guishu_login_2=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int login_back=0x7f020008;
+        public static final int schedule_back=0x7f020009;
+        public static final int textview_schedule=0x7f02000a;
+        public static final int transparent_schedule=0x7f02000b;
     }
     public static final class id {
         public static final int absolute1=0x7f060000;

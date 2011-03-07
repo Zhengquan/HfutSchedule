@@ -30,10 +30,10 @@ public class GetSchedule extends Activity {
 	private CheckBox mchBox1;
 	private CheckBox mchBox2;
 	private boolean autologin;
-	
 	private static final int  LoginSuccess = 0x127;
 	private static final int  LoginFailed = 0x128;
 	private static final int LOGING_THREAD = 0x129;
+	public static final int NEED_EXIT = 0x130;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +47,7 @@ public class GetSchedule extends Activity {
         mchBox1 = (CheckBox)findViewById(R.id.check1);
         mchBox2 = (CheckBox)findViewById(R.id.check2);
         textView4.setVisibility(TextView.INVISIBLE);
+        //测试用
         createHandler();
         //根据Preference中的数据填充表单
         fillControlByPreference();
@@ -54,8 +55,9 @@ public class GetSchedule extends Activity {
         initCheckBox();
         initialAutoComplete();
         initialClickedListener();
-        if(SchedulePreferenceManager.returnAutolog(this))
+        if(SchedulePreferenceManager.returnAutolog(this)){
         	forwardToNextActivity();
+        }
 	}
     
 	private void fillControlByPreference() {
@@ -130,7 +132,9 @@ public class GetSchedule extends Activity {
 		mButton1.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_back));
 		progressBar1.setVisibility(ProgressBar.INVISIBLE);
 		textView4.setText("Login Success!");
-		startActivity(intent);
+		//跳转到主界面,知道返回NEED_EXIT结果
+		startActivityForResult(intent, NEED_EXIT);
+		finish();
 	}
 	private void initialClickedListener() {
 		mButton1.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +152,7 @@ public class GetSchedule extends Activity {
 			}
 		});
 	}
+	
 	public class LoginThread extends Thread{
 		public LoginThread() {}
 		@Override

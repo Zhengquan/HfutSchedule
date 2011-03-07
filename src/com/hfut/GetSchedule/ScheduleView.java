@@ -6,19 +6,25 @@ import java.util.Locale;
 import java.text.SimpleDateFormat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.util.GetSchedule.ParseHtml;
 import com.util.GetSchedule.CookiesManager;
 import com.util.GetSchedule.ScheduleDataBaseHelper;
 import com.util.GetSchedule.ScheduleManager;
+import com.util.GetSchedule.SchedulePreferenceManager;
 
 public class ScheduleView extends Activity {
 	private TextView textViewDate ;
@@ -90,20 +96,142 @@ public class ScheduleView extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
-		menu.add(Menu.NONE,Menu.NONE, Menu.NONE,"个人信息")
+		menu.add(Menu.NONE,Menu.FIRST, Menu.NONE,"个人信息")
 		.setIcon(android.R.drawable.ic_menu_info_details);
 		
-		menu.add(Menu.NONE,Menu.NONE,Menu.NONE,"刷新")
+		menu.add(Menu.NONE,Menu.FIRST + 1,Menu.NONE,"刷新")
 		.setIcon(android.R.drawable.ic_popup_sync);
 		
-		menu.add(Menu.NONE, Menu.NONE, Menu.NONE,"反馈")
+		menu.add(Menu.NONE,Menu.FIRST + 2,Menu.NONE,"注销")
+		.setIcon(android.R.drawable.ic_dialog_alert);
+		
+		menu.add(Menu.NONE, Menu.FIRST + 3, Menu.NONE,"反馈")
 		.setIcon(android.R.drawable.ic_menu_agenda);
 		
-		menu.add(Menu.NONE,Menu.NONE, Menu.NONE,"关于")
+		menu.add(Menu.NONE,Menu.FIRST + 4, Menu.NONE,"关于&帮助")
 		.setIcon(android.R.drawable.ic_menu_help);
+		
+		menu.add(Menu.NONE,Menu.FIRST + 5,Menu.NONE,"退出")
+		.setIcon(android.R.drawable.ic_dialog_map);
 		
 		return super.onCreateOptionsMenu(menu);
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch(item.getItemId()){
+		case Menu.FIRST + 3:
+			//发送邮件
+			Intent email_intent = new Intent(android.content.Intent.ACTION_SEND);
+			email_intent.setType("plain/text*");
+			//放入数据
+			String [] users_to = {"yangzhengquan@gmail.com"};
+			email_intent.putExtra(Intent.EXTRA_EMAIL,users_to);
+			email_intent.putExtra(Intent.EXTRA_SUBJECT, "Report A Schedule Bug Or Suggestion");
+			startActivity(Intent.createChooser(email_intent, "发送邮件..."));
+			break;
+		case Menu.FIRST + 1:
+			refeshDataByNetConnect();
+			break;
+		case Menu.FIRST + 5:
+			setResult(GetSchedule.NEED_EXIT);
+			finish();
+			break;
+		case Menu.FIRST + 2:
+			//注销会删除当前用户的数据库表和配置文件
+			deleteUserData();
+			break;
+		case Menu.FIRST + 4:
+			Intent intent = new Intent();
+			intent.setClass(this, HelpActivity.class);
+			startActivityForResult(intent,GetSchedule.NEED_EXIT);
+		}
+		return super.onContextItemSelected(item);
+	}
+	private void refeshDataByNetConnect() {
+		// TODO Auto-generated method stub
+		new AlertDialog.Builder(this)
+		.setTitle("是否更新数据?")
+		.setIcon(android.R.drawable.ic_menu_rotate)
+		.setMessage("更新数据需要比较长的时间,是否更新数据?")
+		.setPositiveButton(
+				"确定", 
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						//删除已经存储的数据
+						Toast.makeText(ScheduleView.this, 
+								"正在删除已有数据，请耐心等待..."
+								, Toast.LENGTH_SHORT)
+								.show();
+						ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(ScheduleView.this
+								,"schedule"
+								,null
+								,1);
+						scheduleDataBaseHelper.dropTable("_"+user);
+						scheduleDataBaseHelper.close();
+						//下载并存储数据
+						Toast.makeText(ScheduleView.this, 
+								"正在下载、更新数据，请耐心等待..."
+								, Toast.LENGTH_LONG)
+								.show();
+						downloadDataAndStore();
+						//更新完成
+						Toast.makeText(ScheduleView.this, 
+								"恭喜，数据更新完成!"
+								, Toast.LENGTH_SHORT)
+								.show();
+						return;
+					}
+				})
+		.setNegativeButton(
+				"取消",
+				new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface arg0, int arg1) {
+						return;
+					}
+				})
+		.show();
+		
+	}
+	private void deleteUserData() {
+		// TODO Auto-generated method stub
+		//删除数据表
+		new AlertDialog.Builder(this)
+		.setTitle("Warning")
+		.setMessage(getResources().getString(R.string.warning))
+		.setIcon(android.R.drawable.stat_sys_warning)
+		.setPositiveButton(
+				"确定",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+						//确定则删除数据
+						ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(ScheduleView.this
+								,"schedule"
+								,null
+								,1);
+						scheduleDataBaseHelper.dropTable("_"+user);
+						scheduleDataBaseHelper.close();
+						//重置配置文件
+						SchedulePreferenceManager.createSchedulePreference
+						(ScheduleView.this,"","", false);
+						setResult(GetSchedule.NEED_EXIT);
+						finish();
+					}
+				})
+		.setNegativeButton(
+				"取消",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface arg0, int arg1) {
+						// TODO Auto-generated method stub
+						return;
+					}
+				})
+			.show();
+	}
+	
 	private void initialScheduleData() {
 		// TODO Auto-generated method stub
 		

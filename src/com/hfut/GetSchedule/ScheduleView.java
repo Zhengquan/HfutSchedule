@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -85,6 +86,23 @@ public class ScheduleView extends Activity {
 		UIManagerThread uiManagerThread = new UIManagerThread();
 		uiManagerThread.start();
 		
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		menu.add(Menu.NONE,Menu.NONE, Menu.NONE,"个人信息")
+		.setIcon(android.R.drawable.ic_menu_info_details);
+		
+		menu.add(Menu.NONE,Menu.NONE,Menu.NONE,"刷新")
+		.setIcon(android.R.drawable.ic_popup_sync);
+		
+		menu.add(Menu.NONE, Menu.NONE, Menu.NONE,"反馈")
+		.setIcon(android.R.drawable.ic_menu_agenda);
+		
+		menu.add(Menu.NONE,Menu.NONE, Menu.NONE,"关于")
+		.setIcon(android.R.drawable.ic_menu_help);
+		
+		return super.onCreateOptionsMenu(menu);
 	}
 	private void initialScheduleData() {
 		// TODO Auto-generated method stub

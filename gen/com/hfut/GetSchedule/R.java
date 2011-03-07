@@ -19,7 +19,7 @@ public final class R {
         public static final int button_back=0x7f020002;
         public static final int button_focus=0x7f020003;
         public static final int button_schedule=0x7f020004;
-        public static final int guishu_login=0x7f020005;
+        public static final int document_library=0x7f020005;
         public static final int guishu_login_2=0x7f020006;
         public static final int icon=0x7f020007;
         public static final int login_back=0x7f020008;

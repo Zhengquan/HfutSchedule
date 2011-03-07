@@ -54,6 +54,8 @@ public class GetSchedule extends Activity {
         initCheckBox();
         initialAutoComplete();
         initialClickedListener();
+        if(SchedulePreferenceManager.returnAutolog(this))
+        	forwardToNextActivity();
 	}
     
 	private void fillControlByPreference() {
@@ -95,23 +97,7 @@ public class GetSchedule extends Activity {
 				super.handleMessage(msg);
 				switch(msg.what){
 				case LoginSuccess:
-					Intent intent  = new Intent();
-					intent.setClass(GetSchedule.this, ScheduleView.class);
-					Bundle bundle = new Bundle();
-					String user = mAutoComplete1.getText().toString();
-					String password = mEditText2.getText().toString();
-					autologin = mchBox2.isChecked();
-					bundle.putString("user",user);
-					bundle.putString("password",password);
-					if(mchBox1.isChecked()){
-						//Remember Me:把用户名，密码等写入Preference 文件
-						SchedulePreferenceManager.createSchedulePreference(GetSchedule.this, user, password, autologin);
-					}
-					intent.putExtras(bundle);
-					mButton1.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_back));
-					progressBar1.setVisibility(ProgressBar.INVISIBLE);
-					textView4.setText("Login Success!");
-					startActivity(intent);
+					forwardToNextActivity();
 					break;
 				case LoginFailed:
     				progressBar1.setVisibility(ProgressBar.INVISIBLE);
@@ -126,6 +112,25 @@ public class GetSchedule extends Activity {
 			}
     		
     	};
+	}
+	private void forwardToNextActivity(){
+		Intent intent  = new Intent();
+		intent.setClass(GetSchedule.this, ScheduleView.class);
+		Bundle bundle = new Bundle();
+		String user = mAutoComplete1.getText().toString();
+		String password = mEditText2.getText().toString();
+		autologin = mchBox2.isChecked();
+		bundle.putString("user",user);
+		bundle.putString("password",password);
+		if(mchBox1.isChecked()){
+			//Remember Me:把用户名，密码等写入Preference 文件
+			SchedulePreferenceManager.createSchedulePreference(GetSchedule.this, user, password, autologin);
+		}
+		intent.putExtras(bundle);
+		mButton1.setBackgroundDrawable(getResources().getDrawable(R.drawable.button_back));
+		progressBar1.setVisibility(ProgressBar.INVISIBLE);
+		textView4.setText("Login Success!");
+		startActivity(intent);
 	}
 	private void initialClickedListener() {
 		mButton1.setOnClickListener(new View.OnClickListener() {

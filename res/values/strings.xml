@@ -6,8 +6,15 @@
     <string name="warning">注销将会清除数据库和配置文件中所有记录!\n你确定要注销吗？</string>
     <string name="help">
     帮助文档:\n
-    1:通过滑动屏幕"→"获得下一天的日程安排.\n
-    2:通过滑动屏幕"←"获得前一天的安排.\n
+    1:通过按钮"→"获得下一天的日程安排.\n
+    2:通过按钮"←"获得前一天的安排.\n
     3:Menu按键，打开菜单项目
+    \n
+    \n
+    \n 
+    CopyRight(c)kit \n
+    Email:yangzhengquan@gmail.com \n
+    项目主页:http://goo.gl/wOxX7 \n
+    源码:git clone git://github.com/Zhengquan/HfutSchedule.git \n
     </string>
 </resources>

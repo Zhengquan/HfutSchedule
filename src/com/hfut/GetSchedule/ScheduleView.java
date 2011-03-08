@@ -2,6 +2,7 @@ package com.hfut.GetSchedule;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.text.SimpleDateFormat;
 
@@ -30,6 +31,7 @@ public class ScheduleView extends Activity {
 	private TextView textViewDate ;
 	private Handler handler;
 	private TextView []textViewArray;
+	private TextView others;
 	private Bundle bundle;
 	
 	private Button mButton_next;
@@ -42,6 +44,8 @@ public class ScheduleView extends Activity {
 	//当前的用户信息
 	private String user;
 	private String password;
+	private String user_information;
+	private String other_information;
 	//当前用户的数据在数据库中存储的table名称
 	private String table_name;
 	private static final int UPDATE_DATE_TEXTVIEW = 0x111;
@@ -69,6 +73,7 @@ public class ScheduleView extends Activity {
 		textViewDate = (TextView)findViewById(R.id.textview3);
 		mButton_former =(Button)findViewById(R.id.button_former);
 		mButton_next = (Button)findViewById(R.id.button_Next);
+		others = (TextView)findViewById(R.id.schedule6);
 		
 		//创建Handler
 		createHandler();
@@ -121,6 +126,13 @@ public class ScheduleView extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
 		switch(item.getItemId()){
+		case Menu.FIRST :
+			Intent intent_infor = new Intent();
+			intent_infor.setClass(this, UserInforActivity.class);
+			bundle.putString("USER_INFOR", user_information);
+			intent_infor.putExtras(bundle);
+			startActivity(intent_infor);
+ 			break;
 		case Menu.FIRST + 3:
 			//发送邮件
 			Intent email_intent = new Intent(android.content.Intent.ACTION_SEND);
@@ -176,6 +188,11 @@ public class ScheduleView extends Activity {
 								, Toast.LENGTH_LONG)
 								.show();
 						downloadDataAndStore();
+						Toast.makeText(ScheduleView.this, 
+								"数据下载完成，正在载入新的数据,请耐心等待....!"
+								, Toast.LENGTH_SHORT)
+								.show();
+						fillDataFromDB();
 						//更新完成
 						Toast.makeText(ScheduleView.this, 
 								"恭喜，数据更新完成!"
@@ -217,6 +234,10 @@ public class ScheduleView extends Activity {
 						//重置配置文件
 						SchedulePreferenceManager.createSchedulePreference
 						(ScheduleView.this,"","", false);
+						//清空备注
+						SchedulePreferenceManager.addDataByKey(ScheduleView.this, user+"_unarr", "");
+						SchedulePreferenceManager.addDataByKey(ScheduleView.this, user+"_comm", "");
+						SchedulePreferenceManager.addDataByKey(ScheduleView.this, user+"_informations","");
 						setResult(GetSchedule.NEED_EXIT);
 						finish();
 					}
@@ -246,7 +267,7 @@ public class ScheduleView extends Activity {
 		//关闭数据库
 		scheduleDataBaseHelper.close();
 		//初始化table_name
-		table_name = "_"+user;
+		table_name = "_"+user;	
 		if(current_logged){
 			//读取数据
 			fillDataFromDB();
@@ -266,6 +287,11 @@ public class ScheduleView extends Activity {
 				,1);
 		scheduleData = scheduleDataBaseHelper.getStudentSchedule(table_name);
 		scheduleDataBaseHelper.close();
+		
+		other_information = SchedulePreferenceManager.returnDataByKey(this, user+"_unarr")
+		+ "\n" +SchedulePreferenceManager.returnDataByKey(this, user+"_comm");
+		//填充用户信息
+		user_information = SchedulePreferenceManager.returnDataByKey(this, user+"_informations");
 	}
 	void downloadDataAndStore(){
 		CookiesManager cookiesManager = new CookiesManager(
@@ -277,7 +303,13 @@ public class ScheduleView extends Activity {
 			cookiesManager.GenerateCookies();
 			ParseHtml parseHtml = new ParseHtml(cookiesManager.defaultHttpClient);
 			scheduleData = parseHtml.getScheduleThisTerm();
-			//parseHtml.getUserInformation();
+			//构造备注数组
+			ArrayList<String>unarrnge = scheduleData.get(11);
+			ArrayList<String>comments = scheduleData.get(12);
+			//获取个人信息
+			HashMap<String, String> user_infor = parseHtml.getUserInformation();
+			//存储至配置文件
+			storeOtherInfromationToPreference(unarrnge,comments,user_infor);
 			//下载完成后，利用ScheduleDataBaseHelper类完成数据的存储工作
 			ScheduleDataBaseHelper scheduleDataBaseHelper = new ScheduleDataBaseHelper(this
 					,"schedule"
@@ -294,6 +326,32 @@ public class ScheduleView extends Activity {
 			e.printStackTrace();
 		}
 		
+	}
+	private void storeOtherInfromationToPreference(ArrayList<String>unarrange,ArrayList<String>comments,HashMap<String,String> user_infor) {
+		// TODO Auto-generated method stub
+		//添加未安排课程
+		String unarr = "";
+		for(String temp : unarrange)
+			unarr += temp;
+		String comm = "";
+		for(String temp : comments)
+			comm +=temp;
+		String informations = "";
+		informations += "姓名:"+user_infor.get("姓名")+"\n";
+		informations += "学号:"+user_infor.get("学号")+"\n";
+		informations += "专业:"+user_infor.get("专业")+"\n";
+		informations += "性别:"+user_infor.get("性别")+"\n";
+		informations += "学院:"+user_infor.get("学院")+"\n";
+		
+		//存储至配置文件中
+		SchedulePreferenceManager.addDataByKey(this, user+"_unarr", unarr);
+		SchedulePreferenceManager.addDataByKey(this, user+"_comm", comm);
+		SchedulePreferenceManager.addDataByKey(this, user+"_informations",informations);
+		
+		other_information = SchedulePreferenceManager.returnDataByKey(this, user+"_unarr")
+		+ "\n" +SchedulePreferenceManager.returnDataByKey(this, user+"_comm");
+		//填充用户信息
+		user_information = SchedulePreferenceManager.returnDataByKey(this, user+"_informations");
 	}
 	void initButtonListener(){
 		next_count = 0;
@@ -318,6 +376,7 @@ public class ScheduleView extends Activity {
 		});
 	}
 	void setTextScheduleView(ArrayList<String> schedule){
+		others.setText(other_information);
 		for(int i=0;i<4;i++)
 			textViewArray[i].setText(schedule.get(i*2));
 		int real_week = ScheduleManager.getRealWeekDay();

@@ -30,4 +30,14 @@ public class SchedulePreferenceManager {
 		SharedPreferences sharedPreferences = activity.getSharedPreferences("schedule_preference",Activity.MODE_PRIVATE);
     	return sharedPreferences.getString("user", null);
 	}
+	public static void addDataByKey(Activity activity,String key,String data){
+		SharedPreferences sharedPreferences = activity.getSharedPreferences("schedule_preference",Activity.MODE_PRIVATE);
+		sharedPreferences.edit()
+		.putString(key, data)
+		.commit();
+	}
+	public static String returnDataByKey(Activity activity,String key){
+		SharedPreferences sharedPreferences = activity.getSharedPreferences("schedule_preference",Activity.MODE_PRIVATE);
+        return sharedPreferences.getString(key, null);
+	}
 }

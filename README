@@ -1,1 +1,31 @@
-An android programme for students in hfut to check the arrangement of terms.
+/**Copyright [c] [kit]
+ *Email:yangzhengquan@gmail.com
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+**/
+                 HfutSchedule
+合肥工业大学课标查询客户端 Android版。
+使用了Apache HttpCore & HttpClient 4 SDK
+功能类:
+======================================
+CookiesManager ：用于检查和生成登陆所需的Cookie
+ParseManger    ：利用正则表达式，对收到的网页提取有用信息
+ScheduleManager:管理课表的数据生成，如下一天，上一天
+SchedulePreferenceManager :用于保存用户的配置文件，包括用户名，密码等
+ScheeduleDatabaseHelper :封装了Sqlite数据库存储的接口，（数据库:schedule）
+
+Activity类:
+=====================================
+GetSchedule :登录Activity
+ScheduleActivity :主Activity
+HelpActivity & UserInforActivity :帮助和用户信息Activity
+

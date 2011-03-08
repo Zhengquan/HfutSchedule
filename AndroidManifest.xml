@@ -13,6 +13,7 @@
         </activity>
         <activity android:name="ScheduleView"></activity>
         <activity android:name="HelpActivity"></activity>
+        <activity android:name="UserInforActivity"></activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>
